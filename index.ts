@@ -45,7 +45,7 @@ type userSend = {
 app.get("/api", async (req, res) => {
   const { id } = req.body;
   try {
-    const posts = await Post.find({});
+    const posts = await Post.find({}).populate("author");
 
     if (posts) {
       res.json(posts);
@@ -71,9 +71,9 @@ app.put("/api/user", async (req, res) => {
 });
 
 app.post("/api", async (req, res) => {
-  const { title, text, user } = req.body;
+  const { text, date, user } = req.body;
   try {
-    const newPost = new Post({ title, text });
+    const newPost = new Post({ text, date });
     const foundUser: any = await User.findById(user);
     if (foundUser) {
       foundUser.posts.push(newPost);
@@ -92,7 +92,6 @@ app.put("/api/newTodo", async (req, res) => {
   const id = req.body.id;
   try {
     const sent = await Post.findByIdAndUpdate(id, {
-      title: req.body.title,
       text: req.body.text,
     });
     res.json(sent);
