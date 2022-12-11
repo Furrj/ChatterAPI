@@ -10,9 +10,9 @@ const PORT = process.env.PORT || 5000;
 mongoose.connect(
   "mongodb+srv://FraterSKS:ZV0bCxEm1jJihPIk@cluster0.ttqf2bz.mongodb.net/chatter?retryWrites=true&w=majority"
 );
-import { ITodo } from "./models/Todo";
-require("./models/Todo");
-const Todo: Model<ITodo> = mongoose.model<ITodo>("Todo");
+import { IPost } from "./models/Post";
+require("./models/Post");
+const Post: Model<IPost> = mongoose.model<IPost>("Post");
 import { IUser } from "./models/User";
 require("./models/User");
 const User: Model<IUser> = mongoose.model<IUser>("User");
@@ -42,13 +42,27 @@ type userSend = {
 // });
 
 //TODO DATA
-app.put("/api", async (req, res) => {
+app.get("/api", async (req, res) => {
   const { id } = req.body;
   try {
-    const user = await User.findById(id).populate("todos");
+    const posts = await Post.find({});
+
+    if (posts) {
+      res.json(posts);
+    }
+  } catch (e) {
+    console.log(`Error: ${e}`);
+    res.json(`Error: ${e}`);
+  }
+});
+
+app.put("/api/user", async (req, res) => {
+  const { id } = req.body;
+  try {
+    const user = await User.findById(id).populate("posts");
 
     if (user) {
-      res.json(user.todos);
+      res.json(user.posts);
     }
   } catch (e) {
     console.log(`Error: ${e}`);
@@ -59,11 +73,14 @@ app.put("/api", async (req, res) => {
 app.post("/api", async (req, res) => {
   const { title, text, user } = req.body;
   try {
-    const newTodo = new Todo({ title, text });
-    const saved = await newTodo.save();
+    const newPost = new Post({ title, text });
     const foundUser: any = await User.findById(user);
-    foundUser.todos.push(newTodo);
-    await foundUser.save();
+    if (foundUser) {
+      foundUser.posts.push(newPost);
+      newPost.author = foundUser;
+      await foundUser.save();
+    }
+    const saved = await newPost.save();
     res.json(saved);
   } catch (e) {
     console.log(`Error: ${e}`);
@@ -74,7 +91,7 @@ app.post("/api", async (req, res) => {
 app.put("/api/newTodo", async (req, res) => {
   const id = req.body.id;
   try {
-    const sent = await Todo.findByIdAndUpdate(id, {
+    const sent = await Post.findByIdAndUpdate(id, {
       title: req.body.title,
       text: req.body.text,
     });
@@ -88,23 +105,12 @@ app.put("/api/newTodo", async (req, res) => {
 app.put("/api/delete", async (req, res) => {
   const { todoID, userID } = req.body;
   try {
-    const deleted = await Todo.findByIdAndDelete(todoID);
+    const deleted = await Post.findByIdAndDelete(todoID);
     const user = await User.findById(userID);
     if (user) {
-      await user.updateOne({ $pull: { todos: todoID } });
+      await user.updateOne({ $pull: { posts: todoID } });
       await user.save();
     }
-    res.json(deleted);
-  } catch (e) {
-    console.log(`Error: ${e}`);
-    res.json(`Error: ${e}`);
-  }
-});
-
-app.delete("/api/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const deleted = await Todo.findByIdAndDelete(id);
     res.json(deleted);
   } catch (e) {
     console.log(`Error: ${e}`);
