@@ -70,18 +70,24 @@ app.put("/api/user", async (req, res) => {
   }
 });
 
-app.post("/api", async (req, res) => {
-  const { text, date, user } = req.body;
+app.post("/api/newPost", async (req, res) => {
+  const { text, date, user, guestAuthor } = req.body;
+  const newPost = new Post({ text, date });
   try {
-    const newPost = new Post({ text, date });
-    const foundUser: any = await User.findById(user);
-    if (foundUser) {
-      foundUser.posts.push(newPost);
-      newPost.author = foundUser;
-      await foundUser.save();
+    if (user) {
+      const foundUser: any = await User.findById(user);
+      if (foundUser) {
+        foundUser.posts.push(newPost);
+        newPost.author = foundUser;
+        await foundUser.save();
+        const saved = await newPost.save();
+        res.json(saved);
+      }
+    } else {
+      newPost.guestAuthor = guestAuthor;
+      const saved = await newPost.save();
+      res.json(saved);
     }
-    const saved = await newPost.save();
-    res.json(saved);
   } catch (e) {
     console.log(`Error: ${e}`);
     res.json(`Error: ${e}`);

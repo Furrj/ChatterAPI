@@ -5,6 +5,7 @@ export interface IPost extends Document {
   text: string;
   date: string;
   author?: string;
+  guestAuthor?: string;
 }
 
 const postSchema = new Schema<IPost>({
@@ -15,6 +16,7 @@ const postSchema = new Schema<IPost>({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  guestAuthor: String,
 });
 
 model<IPost>("Post", postSchema);
