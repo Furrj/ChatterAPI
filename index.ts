@@ -41,7 +41,7 @@ type userSend = {
 //   res.sendFile(path.join(__dirname, "..", "build", "index.html"));
 // });
 
-//TODO DATA
+//GET ALL POSTS
 app.get("/api", async (req, res) => {
   const { id } = req.body;
   try {
@@ -56,6 +56,7 @@ app.get("/api", async (req, res) => {
   }
 });
 
+//GET USER POSTS
 app.put("/api/user", async (req, res) => {
   const { id } = req.body;
   try {
@@ -70,9 +71,10 @@ app.put("/api/user", async (req, res) => {
   }
 });
 
+//SUBMIT NEW POST
 app.post("/api/newPost", async (req, res) => {
   const { text, date, user, guestAuthor } = req.body;
-  const newPost = new Post({ text, date });
+  const newPost = new Post({ text, date, likes: 0, dislikes: 0 });
   try {
     if (user) {
       const foundUser: any = await User.findById(user);
@@ -94,19 +96,30 @@ app.post("/api/newPost", async (req, res) => {
   }
 });
 
-app.put("/api/newTodo", async (req, res) => {
-  const id = req.body.id;
+//UPDATE POST
+app.put("/api/update", async (req, res) => {
+  const { id, action } = req.body;
   try {
-    const sent = await Post.findByIdAndUpdate(id, {
-      text: req.body.text,
-    });
-    res.json(sent);
+    if (action === "upvote") {
+      const foundPost = await Post.findById(id);
+      if (foundPost) {
+        foundPost.likes++;
+        await foundPost.save();
+      }
+    } else {
+      const foundPost = await Post.findById(id);
+      if (foundPost) {
+        foundPost.dislikes++;
+        await foundPost.save();
+      }
+    }
   } catch (e) {
     console.log(`Error: ${e}`);
     res.json(`Error: ${e}`);
   }
 });
 
+//DELETE POST
 app.put("/api/delete", async (req, res) => {
   const { todoID, userID } = req.body;
   try {
@@ -123,7 +136,7 @@ app.put("/api/delete", async (req, res) => {
   }
 });
 
-//USER DATA
+//REGISTER USER
 app.post(
   "/register",
   async (req, res): Promise<Response<any, Record<string, any>>> => {
@@ -155,6 +168,7 @@ app.post(
   }
 );
 
+//LOGIN USER
 app.post(
   "/login",
   async (req, res): Promise<Response<any, Record<string, any>>> => {

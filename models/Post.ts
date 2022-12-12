@@ -4,6 +4,8 @@ export interface IPost extends Document {
   title: string;
   text: string;
   date: string;
+  likes: number;
+  dislikes: number;
   author?: string;
   guestAuthor?: string;
 }
@@ -12,6 +14,8 @@ const postSchema = new Schema<IPost>({
   title: String,
   text: String,
   date: String,
+  likes: Number,
+  dislikes: Number,
   author: {
     type: Schema.Types.ObjectId,
     ref: "User",
