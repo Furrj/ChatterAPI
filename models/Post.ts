@@ -6,6 +6,7 @@ export interface IPost extends Document {
   date: string;
   likes: number;
   dislikes: number;
+  community?: string;
   author?: string;
   guestAuthor?: string;
 }
