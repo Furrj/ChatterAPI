@@ -73,8 +73,8 @@ app.put("/api/user", async (req, res) => {
 
 //SUBMIT NEW POST
 app.post("/api/newPost", async (req, res) => {
-  const { text, date, user, guestAuthor } = req.body;
-  const newPost = new Post({ text, date, likes: 0, dislikes: 0 });
+  const { text, date, community, user, guestAuthor } = req.body;
+  const newPost = new Post({ text, date, community, likes: 0, dislikes: 0 });
   try {
     if (user) {
       const foundUser: any = await User.findById(user);

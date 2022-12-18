@@ -15,6 +15,7 @@ const postSchema = new Schema<IPost>({
   title: String,
   text: String,
   date: String,
+  community: String,
   likes: Number,
   dislikes: Number,
   author: {
