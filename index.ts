@@ -56,14 +56,14 @@ app.get("/api", async (req, res) => {
   }
 });
 
-//GET USER POSTS
+//GET USER INFO
 app.put("/api/user", async (req, res) => {
   const { id } = req.body;
   try {
     const user = await User.findById(id).populate("posts");
 
     if (user) {
-      res.json(user.posts);
+      res.json(user);
     }
   } catch (e) {
     console.log(`Error: ${e}`);
@@ -195,6 +195,26 @@ app.post(
     }
   }
 );
+
+//UPDATE USER
+app.put("/api/user/update", async (req, res) => {
+  const { id, name, age, gender, bio } = req.body;
+
+  try {
+    const foundUser = await User.findById(id);
+    if (foundUser) {
+      foundUser.name = name;
+      foundUser.age = age;
+      foundUser.gender = gender;
+      foundUser.bio = bio;
+      const savedUser = await foundUser.save();
+      res.json(savedUser);
+    }
+  } catch (e) {
+    console.log(`Error: ${e}`);
+    res.json(`Error: ${e}`);
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}...`);
