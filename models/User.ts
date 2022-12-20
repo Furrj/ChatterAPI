@@ -4,6 +4,11 @@ export interface IUser extends Document {
   username: string;
   password: string;
   posts?: any[];
+  name?: string;
+  age?: number;
+  gender?: string;
+  bio?: string;
+  communities?: string[];
 }
 
 const userSchema = new Schema<IUser>({
@@ -13,6 +18,15 @@ const userSchema = new Schema<IUser>({
     {
       type: Schema.Types.ObjectId,
       ref: "Post",
+    },
+  ],
+  name: String,
+  age: Number,
+  gender: String,
+  bio: String,
+  communities: [
+    {
+      type: String,
     },
   ],
 });
