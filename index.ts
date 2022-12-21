@@ -120,14 +120,14 @@ app.put("/api/update", async (req, res) => {
 });
 
 //DELETE POST
-app.put("/api/delete", async (req, res) => {
-  const { todoID, userID } = req.body;
+app.put("/api/deletePost", async (req, res) => {
+  const { postID, userID } = req.body;
   try {
-    const deleted = await Post.findByIdAndDelete(todoID);
-    const user = await User.findById(userID);
-    if (user) {
-      await user.updateOne({ $pull: { posts: todoID } });
-      await user.save();
+    const deleted = await Post.findByIdAndDelete(postID);
+    const foundUser = await User.findById(userID);
+    if (foundUser) {
+      await foundUser.updateOne({ $pull: { posts: postID } });
+      await foundUser.save();
     }
     res.json(deleted);
   } catch (e) {
