@@ -196,7 +196,7 @@ app.post(
   }
 );
 
-//UPDATE USER
+//UPDATE USER DATA
 app.put("/api/user/update", async (req, res) => {
   const { id, name, age, gender, bio } = req.body;
 
@@ -207,6 +207,24 @@ app.put("/api/user/update", async (req, res) => {
       foundUser.age = age;
       foundUser.gender = gender;
       foundUser.bio = bio;
+      const savedUser = await foundUser.save();
+      res.json(savedUser);
+    }
+  } catch (e) {
+    console.log(`Error: ${e}`);
+    res.json(`Error: ${e}`);
+  }
+});
+
+//USER JOIN COMMUNITY
+app.put("/api/user/communities", async (req, res) => {
+  const { id, community } = req.body;
+  console.log(req.body);
+
+  const foundUser = await User.findById(id);
+  try {
+    if (foundUser) {
+      foundUser.communities?.push(community);
       const savedUser = await foundUser.save();
       res.json(savedUser);
     }
