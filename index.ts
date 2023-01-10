@@ -3,6 +3,8 @@ import mongoose, { Model } from "mongoose";
 import cors from "cors";
 import path from "path";
 import bcrypt from "bcrypt";
+import session from "express-session";
+import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 5000;
 
@@ -14,14 +16,29 @@ import { IPost } from "./models/Post";
 require("./models/Post");
 const Post: Model<IPost> = mongoose.model<IPost>("Post");
 import { IUser } from "./models/User";
+import { userInfo } from "os";
 require("./models/User");
 const User: Model<IUser> = mongoose.model<IUser>("User");
 
 const app = express();
 
 app.use(express.static(path.join(__dirname, "..", "build")));
-app.use(cors());
+app.use(cors({ credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
+declare module "express-session" {
+  interface SessionData {
+    userInfo: userSend;
+  }
+}
+app.use(
+  session({
+    secret: "ABCDEFG",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 15 },
+  })
+);
 
 //TS
 //TYPES
@@ -131,6 +148,12 @@ app.put("/api/deletePost", async (req, res) => {
   }
 });
 
+//VALIDATE USER
+app.get("/validate", (req, res) => {
+  console.log(req.session.userInfo);
+  res.json(req.session.userInfo);
+});
+
 //REGISTER USER
 app.post(
   "/register",
@@ -180,6 +203,11 @@ app.post(
       userQuery.password
     );
     if (checkPassword) {
+      req.session.userInfo = {
+        username: userQuery.username,
+        id: userQuery._id,
+        valid: true,
+      };
       return res.json({
         username: userQuery.username,
         id: userQuery._id,
@@ -190,6 +218,13 @@ app.post(
     }
   }
 );
+
+//LOGOUT USER
+app.get("/logout", async (req, res) => {
+  console.log("logout route hit");
+  req.session.userInfo = { username: "", id: "", valid: false };
+  res.json("deleted");
+});
 
 //UPDATE USER DATA
 app.put("/api/user/update", async (req, res) => {
