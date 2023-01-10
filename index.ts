@@ -36,11 +36,6 @@ type userSend = {
   valid: boolean;
 };
 
-//ROUTES
-// app.get("/*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "..", "build", "index.html"));
-// });
-
 //GET ALL POSTS
 app.get("/api", async (req, res) => {
   const { id } = req.body;
@@ -232,6 +227,10 @@ app.put("/api/user/communities", async (req, res) => {
     console.log(`Error: ${e}`);
     res.json(`Error: ${e}`);
   }
+});
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
 });
 
 app.listen(PORT, () => {
