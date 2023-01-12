@@ -36,6 +36,8 @@ app.use(
     secret: "ABCDEFG",
     resave: false,
     saveUninitialized: false,
+    name: "chatter",
+    proxy: true,
     cookie: { maxAge: 1000 * 15 },
   })
 );
