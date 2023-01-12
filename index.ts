@@ -45,12 +45,19 @@ app.use(
 type userInfo = {
   username: string;
   password: string;
+  valid: boolean;
 };
 
 type userSend = {
   username: string;
   id: string;
   valid: boolean;
+};
+
+const invalidUser: userSend = {
+  username: "",
+  id: "",
+  valid: false,
 };
 
 //GET ALL POSTS
@@ -150,8 +157,13 @@ app.put("/api/deletePost", async (req, res) => {
 
 //VALIDATE USER
 app.get("/validate", (req, res) => {
-  console.log(req.session.userInfo);
-  res.json(req.session.userInfo);
+  if (req.session.userInfo) {
+    if (req.session.userInfo.valid === false) {
+      res.json(invalidUser);
+    } else {
+      res.json(req.session.userInfo);
+    }
+  }
 });
 
 //REGISTER USER
@@ -178,11 +190,13 @@ app.post(
 
     await newUser.save();
 
-    return res.json({
+    req.session.userInfo = {
       username: newUser.username,
       id: newUser._id,
       valid: true,
-    });
+    };
+
+    return res.json(req.session.userInfo);
   }
 );
 
@@ -221,8 +235,7 @@ app.post(
 
 //LOGOUT USER
 app.get("/logout", async (req, res) => {
-  console.log("logout route hit");
-  req.session.userInfo = { username: "", id: "", valid: false };
+  req.session.userInfo = invalidUser;
   res.json("deleted");
 });
 
