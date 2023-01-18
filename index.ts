@@ -160,13 +160,15 @@ app.put("/api/deletePost", async (req, res) => {
 });
 
 //VALIDATE USER
-app.get("/validate", (req, res) => {
+app.put("/validate", (req, res) => {
   if (req.session.userInfo) {
     if (req.session.userInfo.valid === false) {
       res.json(invalidUser);
     } else {
       res.json(req.session.userInfo);
     }
+  } else {
+    res.json(invalidUser);
   }
 });
 
@@ -240,7 +242,7 @@ app.post(
 //LOGOUT USER
 app.get("/logout", async (req, res) => {
   req.session.userInfo = invalidUser;
-  res.json("deleted");
+  res.json("logged out");
 });
 
 //UPDATE USER DATA
