@@ -40,7 +40,7 @@ app.use(
     saveUninitialized: false,
     name: "chatter",
     proxy: true,
-    cookie: { maxAge: 1000 * 15 },
+    cookie: { maxAge: 1000 * 60 * 15, secure: false },
   })
 );
 
