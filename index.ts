@@ -8,9 +8,11 @@ import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 5000;
 
+//HWOwPjcXBbtMWRKy
+
 //MONGOOSE
 mongoose.connect(
-  "mongodb+srv://FraterSKS:ZV0bCxEm1jJihPIk@cluster0.ttqf2bz.mongodb.net/chatter?retryWrites=true&w=majority"
+  "mongodb+srv://FraterSKS:HWOwPjcXBbtMWRKy@cluster0.6nxaibz.mongodb.net/chatterprod?retryWrites=true&w=majority"
 );
 import { IPost } from "./models/Post";
 require("./models/Post");
