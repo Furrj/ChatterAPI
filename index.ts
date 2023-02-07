@@ -45,7 +45,6 @@ app.use(
 );
 
 //TS
-//TYPES
 type userInfo = {
   username: string;
   password: string;
@@ -209,15 +208,18 @@ app.post(
 //LOGIN USER
 app.post(
   "/login",
+
   async (req, res): Promise<Response<any, Record<string, any>>> => {
     const { username, password }: userInfo = req.body;
     const invalidUser: userSend = { username: "", id: "", valid: false };
 
+    //CHECK IF VALID USERNAME
     const userQuery: Model<IUser> | any = await User.findOne({ username });
     if (!userQuery) {
       return res.json(invalidUser);
     }
 
+    //CHECK FOR VALID PASSWORD
     const checkPassword: boolean = await bcrypt.compare(
       password,
       userQuery.password
